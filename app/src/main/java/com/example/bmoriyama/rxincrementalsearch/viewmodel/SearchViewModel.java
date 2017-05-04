@@ -1,7 +1,10 @@
 package com.example.bmoriyama.rxincrementalsearch.viewmodel;
 
+import android.util.Log;
 import android.widget.SearchView;
 
+import com.example.bmoriyama.rxincrementalsearch.model.Item;
+import com.example.bmoriyama.rxincrementalsearch.model.SearchResponse;
 import com.example.bmoriyama.rxincrementalsearch.service.StackOverflowService;
 import com.example.bmoriyama.rxincrementalsearch.ui.SearchActivity;
 import com.jakewharton.rxbinding2.widget.RxSearchView;
@@ -16,6 +19,8 @@ public class SearchViewModel {
     private SearchActivity view;
     private StackOverflowService service;
 
+    CompositeDisposable compositeDisposable;
+
     public SearchViewModel(SearchActivity view, StackOverflowService service) {
         this.view = view;
         this.service = service;
@@ -24,15 +29,15 @@ public class SearchViewModel {
     private ObservableTransformer<QueryTextChangeEvent, SearchActionStateModel> createObservableSearchEvent() {
         ObservableTransformer<QueryTextChangeEvent, SearchActionStateModel> search = events -> events
                 .flatMap(event -> service.searchQuestions(event.getQueryString())
-                        .map(response -> SearchActionStateModel.getInstance().success())
-                        .onErrorReturn(t -> SearchActionStateModel.getInstance().failure(t.getMessage()))
+                        .map(response -> onSuccess(response))
+                        .onErrorReturn(t -> onFailure(t))
                         .observeOn(AndroidSchedulers.mainThread())
                         .startWith(SearchActionStateModel.getInstance().inProgress()));
         return search;
     }
 
     public void subscribeToSearchEvents(SearchView searchView) {
-        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable = new CompositeDisposable();
 
         compositeDisposable.add(RxSearchView.queryTextChanges(searchView)
                 .map(ignored -> new QueryTextChangeEvent(searchView.getQuery().toString()))
@@ -41,10 +46,27 @@ public class SearchViewModel {
                     if (!SearchActionStateModel.getInstance().isInProgress()) {
                         if (SearchActionStateModel.getInstance().isSuccess()) {
                             // update the view stuff here - success
+
                         } else {
                             // show error
                         }
                     }
                 }, t -> { throw new OnErrorNotImplementedException(t); }));
+    }
+
+    private SearchActionStateModel onSuccess(SearchResponse response) {
+        for (Item item : response.getItems()) {
+            Log.i("item", item.getTitle());
+        }
+        return SearchActionStateModel.getInstance().success();
+    }
+
+    private SearchActionStateModel onFailure(Throwable t) {
+        Log.e("error", t.getLocalizedMessage());
+        return SearchActionStateModel.getInstance().failure(t.getMessage());
+    }
+
+    public void teardown() {
+        compositeDisposable.dispose();
     }
 }

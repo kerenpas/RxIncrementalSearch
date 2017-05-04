@@ -16,7 +16,7 @@ public class SearchActivityModule {
     }
 
     @Provides
-    SearchViewModel provideSearchViewModel(SearchActivity activity, StackOverflowService service) {
+    SearchViewModel provideSearchViewModel(StackOverflowService service) {
         return new SearchViewModel(activity, service);
     }
 }
