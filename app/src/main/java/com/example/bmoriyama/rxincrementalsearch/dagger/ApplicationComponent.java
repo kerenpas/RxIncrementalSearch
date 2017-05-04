@@ -13,5 +13,5 @@ import dagger.Component;
 public interface ApplicationComponent {
     void inject(RxIncrementalSearchApplication application);
 
-    MainActivityComponent plus(MainActivityModule mainActivityModule);
+    SearchActivityComponent plus(SearchActivityModule searchActivityModule);
 }
