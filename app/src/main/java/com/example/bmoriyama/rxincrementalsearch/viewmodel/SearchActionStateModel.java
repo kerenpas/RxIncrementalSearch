@@ -19,15 +19,18 @@ public class SearchActionStateModel {
 
     public SearchActionStateModel inProgress() {
         inProgress = true;
+        success = false;
         return instance;
     }
 
     public SearchActionStateModel success() {
+        inProgress = false;
         success = true;
         return instance;
     }
 
     public SearchActionStateModel failure(String errorMessage) {
+        inProgress = false;
         this.errorMessage = errorMessage;
         return instance;
     }

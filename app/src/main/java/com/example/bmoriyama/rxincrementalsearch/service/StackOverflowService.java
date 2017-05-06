@@ -1,5 +1,8 @@
 package com.example.bmoriyama.rxincrementalsearch.service;
 
+import android.net.Uri;
+import android.util.Log;
+
 import com.example.bmoriyama.rxincrementalsearch.model.SearchResponse;
 
 import io.reactivex.Observable;
@@ -19,11 +22,11 @@ public class StackOverflowService {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
         stackOverflowAPI = retrofit.create(StackOverflowAPI.class);
     }
 
     public Observable<SearchResponse> searchQuestions(String inTitle) {
-        return stackOverflowAPI.searchQuestions(inTitle);
+        Log.i("query", Uri.encode(inTitle));
+        return stackOverflowAPI.searchQuestions(Uri.encode(inTitle));
     }
 }

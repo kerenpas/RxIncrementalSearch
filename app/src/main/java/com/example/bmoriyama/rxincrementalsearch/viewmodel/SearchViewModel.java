@@ -28,7 +28,7 @@ public class SearchViewModel {
 
     private ObservableTransformer<QueryTextChangeEvent, SearchActionStateModel> createObservableSearchEvent() {
         ObservableTransformer<QueryTextChangeEvent, SearchActionStateModel> search = events -> events
-                .flatMap(event -> service.searchQuestions(event.getQueryString())
+                .switchMap(event -> service.searchQuestions(event.getQueryString())
                         .map(response -> onSuccess(response))
                         .onErrorReturn(t -> onFailure(t))
                         .observeOn(AndroidSchedulers.mainThread())
@@ -46,7 +46,7 @@ public class SearchViewModel {
                     if (!SearchActionStateModel.getInstance().isInProgress()) {
                         if (SearchActionStateModel.getInstance().isSuccess()) {
                             // update the view stuff here - success
-
+                            Log.i("View Updated", "here");
                         } else {
                             // show error
                         }
@@ -56,7 +56,7 @@ public class SearchViewModel {
 
     private SearchActionStateModel onSuccess(SearchResponse response) {
         for (Item item : response.getItems()) {
-            Log.i("item", item.getTitle());
+//            Log.i("item", item.getTitle());
         }
         return SearchActionStateModel.getInstance().success();
     }
