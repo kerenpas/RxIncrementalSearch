@@ -5,6 +5,9 @@ import android.util.Log;
 
 import com.example.bmoriyama.rxincrementalsearch.model.SearchResponse;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
@@ -25,8 +28,8 @@ public class StackOverflowService {
         stackOverflowAPI = retrofit.create(StackOverflowAPI.class);
     }
 
-    public Observable<SearchResponse> searchQuestions(String inTitle) {
+    public Observable<SearchResponse> searchQuestions(String inTitle) throws UnsupportedEncodingException {
         Log.i("query", Uri.encode(inTitle));
-        return stackOverflowAPI.searchQuestions(Uri.encode(inTitle));
+        return stackOverflowAPI.searchQuestions(URLEncoder.encode(inTitle, "UTF-8"));
     }
 }

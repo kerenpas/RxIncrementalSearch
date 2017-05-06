@@ -22,7 +22,6 @@ public class SearchResultsListAdapter extends ArrayAdapter {
     private SearchResultViewHolder viewHolder;
     List<Item> itemList;
 
-
     public SearchResultsListAdapter(@NonNull Context context, @LayoutRes int resource) {
         super(context, resource);
         this.context = context;
@@ -60,5 +59,4 @@ public class SearchResultsListAdapter extends ArrayAdapter {
     public void setItemList(List<Item> itemList) {
         this.itemList = itemList;
     }
-
 }
