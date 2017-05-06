@@ -1,6 +1,6 @@
 package com.example.bmoriyama.rxincrementalsearch.dagger;
 
-import com.example.bmoriyama.rxincrementalsearch.ui.SearchActivity;
+import com.example.bmoriyama.rxincrementalsearch.ui.activity.SearchActivity;
 
 import dagger.Subcomponent;
 

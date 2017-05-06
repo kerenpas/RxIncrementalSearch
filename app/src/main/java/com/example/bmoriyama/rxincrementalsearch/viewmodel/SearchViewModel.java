@@ -6,8 +6,11 @@ import android.widget.SearchView;
 import com.example.bmoriyama.rxincrementalsearch.model.Item;
 import com.example.bmoriyama.rxincrementalsearch.model.SearchResponse;
 import com.example.bmoriyama.rxincrementalsearch.service.StackOverflowService;
-import com.example.bmoriyama.rxincrementalsearch.ui.SearchActivity;
+import com.example.bmoriyama.rxincrementalsearch.ui.activity.SearchActivity;
 import com.jakewharton.rxbinding2.widget.RxSearchView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.ObservableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -18,12 +21,14 @@ public class SearchViewModel {
 
     private SearchActivity view;
     private StackOverflowService service;
+    private List<Item> itemList;
 
     CompositeDisposable compositeDisposable;
 
     public SearchViewModel(SearchActivity view, StackOverflowService service) {
         this.view = view;
         this.service = service;
+        itemList = new ArrayList<>();
     }
 
     private ObservableTransformer<QueryTextChangeEvent, SearchActionStateModel> createObservableSearchEvent() {
@@ -45,8 +50,7 @@ public class SearchViewModel {
                 .subscribe(model -> {
                     if (!SearchActionStateModel.getInstance().isInProgress()) {
                         if (SearchActionStateModel.getInstance().isSuccess()) {
-                            // update the view stuff here - success
-                            Log.i("View Updated", "here");
+                            updateSearchResults();
                         } else {
                             // show error
                         }
@@ -54,9 +58,14 @@ public class SearchViewModel {
                 }, t -> { throw new OnErrorNotImplementedException(t); }));
     }
 
+    private void updateSearchResults() {
+        view.updateSearchResults(itemList);
+    }
+
     private SearchActionStateModel onSuccess(SearchResponse response) {
+        itemList.clear();
         for (Item item : response.getItems()) {
-//            Log.i("item", item.getTitle());
+            itemList.add(item);
         }
         return SearchActionStateModel.getInstance().success();
     }
