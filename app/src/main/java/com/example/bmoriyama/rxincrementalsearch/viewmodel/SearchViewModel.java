@@ -50,16 +50,12 @@ public class SearchViewModel {
                 .subscribe(model -> {
                     if (!SearchActionStateModel.getInstance().isInProgress()) {
                         if (SearchActionStateModel.getInstance().isSuccess()) {
-                            updateSearchResults();
+                            view.updateSearchResults(itemList);
                         } else {
-                            // show error
+                            view.showError();
                         }
                     }
                 }, t -> { throw new OnErrorNotImplementedException(t); }));
-    }
-
-    private void updateSearchResults() {
-        view.updateSearchResults(itemList);
     }
 
     private SearchActionStateModel onSuccess(SearchResponse response) {

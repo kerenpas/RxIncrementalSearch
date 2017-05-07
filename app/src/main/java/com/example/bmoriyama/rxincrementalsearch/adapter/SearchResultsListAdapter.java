@@ -42,6 +42,8 @@ public class SearchResultsListAdapter extends ArrayAdapter {
         }
 
         viewHolder.tvTitle.setText(itemList.get(position).getTitle());
+        viewHolder.tvAnswerCount.setText(itemList.get(position).getAnswerCount().toString());
+        viewHolder.tvOwnerDisplayName.setText(itemList.get(position).getOwner().getDisplayName());
         return convertView;
     }
 

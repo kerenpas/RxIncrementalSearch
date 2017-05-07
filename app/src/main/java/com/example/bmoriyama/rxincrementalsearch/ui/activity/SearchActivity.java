@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.example.bmoriyama.rxincrementalsearch.R;
 import com.example.bmoriyama.rxincrementalsearch.RxIncrementalSearchApplication;
@@ -64,5 +65,9 @@ public class SearchActivity extends AppCompatActivity {
     public void updateSearchResults(List<Item> itemList) {
         adapter.setItemList(itemList);
         adapter.notifyDataSetChanged();
+    }
+
+    public void showError() {
+        Toast.makeText(this, "Search results can not be displayed.", Toast.LENGTH_LONG).show();
     }
 }
