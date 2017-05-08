@@ -1,12 +1,13 @@
 package com.example.bmoriyama.rxincrementalsearch.viewmodel;
 
-import android.util.Log;
 import android.widget.SearchView;
 
 import com.example.bmoriyama.rxincrementalsearch.model.Item;
 import com.example.bmoriyama.rxincrementalsearch.model.SearchResponse;
 import com.example.bmoriyama.rxincrementalsearch.service.StackOverflowService;
 import com.example.bmoriyama.rxincrementalsearch.ui.activity.SearchActivity;
+import com.example.bmoriyama.rxincrementalsearch.viewmodel.action.SearchActionStateModel;
+import com.example.bmoriyama.rxincrementalsearch.viewmodel.event.QueryTextChangeEvent;
 import com.jakewharton.rxbinding2.widget.RxSearchView;
 
 import java.util.ArrayList;
@@ -21,13 +22,15 @@ public class SearchViewModel {
 
     private SearchActivity view;
     private StackOverflowService service;
+    private SearchActionStateModel actionStateModel;
     private List<Item> itemList;
 
     CompositeDisposable compositeDisposable;
 
-    public SearchViewModel(SearchActivity view, StackOverflowService service) {
+    public SearchViewModel(SearchActivity view, StackOverflowService service, SearchActionStateModel actionStateModel) {
         this.view = view;
         this.service = service;
+        this.actionStateModel = actionStateModel;
         itemList = new ArrayList<>();
     }
 
@@ -37,7 +40,7 @@ public class SearchViewModel {
                         .map(response -> onSuccess(response))
                         .onErrorReturn(t -> onFailure(t))
                         .observeOn(AndroidSchedulers.mainThread())
-                        .startWith(SearchActionStateModel.getInstance().inProgress()));
+                        .startWith(actionStateModel.inProgress()));
         return search;
     }
 
@@ -48,27 +51,34 @@ public class SearchViewModel {
                 .map(ignored -> new QueryTextChangeEvent(searchView.getQuery().toString()))
                 .compose(createObservableSearchEvent())
                 .subscribe(model -> {
-                    if (!SearchActionStateModel.getInstance().isInProgress()) {
-                        if (SearchActionStateModel.getInstance().isSuccess()) {
-                            view.updateSearchResults(itemList);
+                    if (!actionStateModel.isInProgress()) {
+                        if (actionStateModel.isSuccess()) {
+                            updateSearchResults(itemList);
                         } else {
-                            view.showError();
+                            showError();
                         }
                     }
                 }, t -> { throw new OnErrorNotImplementedException(t); }));
     }
 
-    private SearchActionStateModel onSuccess(SearchResponse response) {
+    public SearchActionStateModel onSuccess(SearchResponse response) {
         itemList.clear();
         for (Item item : response.getItems()) {
             itemList.add(item);
         }
-        return SearchActionStateModel.getInstance().success();
+        return actionStateModel.success();
     }
 
-    private SearchActionStateModel onFailure(Throwable t) {
-        Log.e("error", t.getLocalizedMessage());
-        return SearchActionStateModel.getInstance().failure(t.getMessage());
+    public SearchActionStateModel onFailure(Throwable t) {
+        return actionStateModel.failure(t.getMessage());
+    }
+
+    public void updateSearchResults(List<Item> itemList) {
+        view.updateSearchResults(itemList);
+    }
+
+    public void showError() {
+        view.showError();
     }
 
     public void teardown() {

@@ -1,4 +1,4 @@
-package com.example.bmoriyama.rxincrementalsearch.viewmodel;
+package com.example.bmoriyama.rxincrementalsearch.viewmodel.event;
 
 public class QueryTextChangeEvent {
 
